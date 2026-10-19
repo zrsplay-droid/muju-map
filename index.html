@@ -17,7 +17,8 @@
 @media (prefers-color-scheme:dark){:root{--bg:#161d24;--fg:#e8edf2;--muted:#9aa7b4;--line:#2a343e;--chip:#202933;color-scheme:dark}}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font-family:var(--sans);-webkit-tap-highlight-color:transparent}
-#map{position:fixed;inset:0}
+#mapwrap{position:fixed;inset:0}
+#map{width:100%;height:100%}
 .top{position:fixed;left:0;right:0;top:0;padding:calc(env(safe-area-inset-top,0px) + 10px) max(10px,env(safe-area-inset-right,0px)) 0 max(10px,env(safe-area-inset-left,0px));display:flex;gap:6px;flex-wrap:wrap;z-index:1000;pointer-events:none}
 .chip{pointer-events:auto;border:0;font:600 13px var(--sans);padding:7px 10px 7px 8px;border-radius:999px;background:var(--bg);color:var(--fg);box-shadow:0 1px 4px rgba(0,0,0,.25);display:flex;align-items:center;gap:7px;cursor:pointer}
 .chip i{width:14px;height:14px;border-radius:50%;border:3px solid var(--c);background:transparent}
@@ -51,7 +52,7 @@ canvas{width:100%;height:96px;display:block;touch-action:none}
 </style>
 </head>
 <body>
-<div id="map"></div>
+<div id="mapwrap"><div id="map"></div></div>
 <div class="top" id="chips"></div>
 <div class="fab" id="fab">
   <button id="btnLoc" aria-label="내 위치" title="내 위치"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></button>
