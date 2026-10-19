@@ -143,7 +143,12 @@ function naverAdapter(){
 function leafletAdapter(){
   const c0=COURSES[0].pts[0];
   const map=L.map('map',{zoomControl:false,attributionControl:true}).setView([c0[0],c0[1]],13);
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);
+  const bases=[
+    [L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',{maxZoom:17,subdomains:'abc',attribution:'© OpenStreetMap · © OpenTopoMap'}),'지형'],
+    [L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{maxZoom:19,subdomains:'abcd',attribution:'© OpenStreetMap · © CARTO'}),'일반']];
+  let bi=0; bases[0][0].addTo(map);
+  const bt=$('btnType'); bt.hidden=false; bt.textContent=bases[0][1];
+  bt.onclick=()=>{map.removeLayer(bases[bi][0]); bi=(bi+1)%bases.length; bases[bi][0].addTo(map); bt.textContent=bases[bi][1];};
   L.control.scale({imperial:false,position:'bottomleft'}).addTo(map);
   const html=(lat,lon,content,z=10)=>{const m=L.marker([lat,lon],{zIndexOffset:z*10,interactive:false,icon:L.divIcon({className:'lf-icon',html:'<div style="position:relative">'+content+'</div>',iconSize:[0,0]})}).addTo(map);
     return {show:b=>b?m.addTo(map):m.remove(),move:(a,b)=>m.setLatLng([a,b]),el:()=>m.getElement()};};
@@ -285,8 +290,15 @@ async function useLeaflet(reason){
   if(M&&M.kind==='leaflet')return;
   if(M){try{M.destroy();}catch(e){} $('map').innerHTML='';}
   loadCss('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
-  await loadScript('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js');
-  $('btnType').hidden=true; M=leafletAdapter(); build(); if(reason)toast(reason,5000);
+  try{ await loadScript('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'); }
+  catch(e){ showFail(); return; }
+  M=leafletAdapter(); build(); if(reason)toast(reason,5000);
+}
+function showFail(){
+  const d=document.createElement('div');
+  d.style.cssText='position:fixed;inset:0;display:grid;place-items:center;padding:24px;z-index:900;text-align:center;font-size:15px;line-height:1.6;background:var(--bg);color:var(--fg)';
+  d.innerHTML='<div><b>지도를 불러오지 못했어.</b><br>인터넷에 연결된 상태에서 사파리·크롬 같은 브라우저로 열어줘.<br><span style="color:var(--muted);font-size:13px">앱 안의 파일 미리보기에서는 외부 지도가 막혀서 안 보여.</span></div>';
+  document.body.appendChild(d);
 }
 window.navermap_authFailure=()=>{useLeaflet('네이버 지도 인증 실패 → 키와 등록한 서비스 URL을 확인해줘. 지금은 OpenStreetMap으로 표시 중.');};
 (async()=>{
